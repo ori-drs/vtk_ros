@@ -52,6 +52,7 @@
   <depend>grid_map_ros</depend>
   <depend>pcl_ros</depend>
   <depend>multisense_image_utils</depend>
+  <depend>image_transport</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

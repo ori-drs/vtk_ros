@@ -7,6 +7,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   multisense_image_utils
+  image_transport
   grid_map_ros)
 
 find_package(VTK REQUIRED)
