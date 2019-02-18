@@ -31,7 +31,7 @@ vtkRosPointCloudSubscriber::vtkRosPointCloudSubscriber()
   fixed_frame_ = "map"; // or "odom"
   sec_ = 0;
   nsec_ = 0;
-  number_of_point_clouds_ = 10;
+  number_of_point_clouds_ = 1;
 }
 
 vtkRosPointCloudSubscriber::~vtkRosPointCloudSubscriber() {
