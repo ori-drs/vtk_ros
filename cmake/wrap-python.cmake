@@ -27,6 +27,9 @@ function(wrap_python library_name sources)
     set_target_properties(${library_name}Python PROPERTIES SUFFIX ".pyd")
   endif(WIN32 AND NOT CYGWIN)
 
+  set_target_properties(${library_name}Python
+  PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}/../)
+
   install(TARGETS ${library_name}Python DESTINATION ${VTK_ROS_INSTALL_PYTHON_DIR}/director)
   install(TARGETS ${library_name}PythonD DESTINATION ${VTK_ROS_INSTALL_LIB_DIR})
 
