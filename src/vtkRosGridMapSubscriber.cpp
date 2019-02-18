@@ -38,16 +38,10 @@ void vtkRosGridMapSubscriber::Start() {
   ros::NodeHandle n;
   subscriber_ = boost::make_shared<ros::Subscriber>(
         n.subscribe("/elevation_mapping/elevation_map", 1000, &vtkRosGridMapSubscriber::GridMapCallback, this));
-
-  if (!spinner_) {
-    spinner_ = boost::make_shared<ros::AsyncSpinner>(1);
-  }
-  spinner_->start();
 }
 
 void vtkRosGridMapSubscriber::Stop() {
   subscriber_->shutdown();
-  spinner_.reset();
 }
 
 void vtkRosGridMapSubscriber::GridMapCallback(const grid_map_msgs::GridMap& message) {

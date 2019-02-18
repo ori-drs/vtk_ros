@@ -93,7 +93,6 @@ private:
       sensor_msgs::CameraInfo> > sync_;
 
   boost::shared_ptr<image_transport::ImageTransport> it_;
-  boost::shared_ptr<ros::AsyncSpinner> spinner_;
   std::mutex mutex_;
 };
 

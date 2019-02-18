@@ -88,7 +88,6 @@ private:
   std::string colorLayer_;
 
   boost::shared_ptr<ros::Subscriber> subscriber_;
-  boost::shared_ptr<ros::AsyncSpinner> spinner_;
   std::mutex mutex_;
 };
 

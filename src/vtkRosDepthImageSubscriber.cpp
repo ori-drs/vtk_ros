@@ -44,11 +44,6 @@ void vtkRosDepthImageSubscriber::Start(const std::string& image_topic_a, const s
   sync_->connectInput(*image_a_sub_, *info_a_sub_, *image_b_sub_, *info_b_sub_);
   sync_->registerCallback(boost::bind(&vtkRosDepthImageSubscriber::DepthImageCallback, this, _1, _2, _3, _4));
 
-  //TODO create a single spinner in Director
-  if (!spinner_) {
-    spinner_ = boost::make_shared<ros::AsyncSpinner>(1);
-  }
-  spinner_->start();
 }
 
 void vtkRosDepthImageSubscriber::Stop()
@@ -58,7 +53,6 @@ void vtkRosDepthImageSubscriber::Stop()
 
   info_a_sub_->unsubscribe();
   info_b_sub_->unsubscribe();
-  spinner_.reset();
 }
 
 void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageConstPtr& image_a,
