@@ -15,7 +15,10 @@ include(${VTK_USE_FILE})
 
 find_package(PCL REQUIRED)
 
+set(library_name vtkRos)
 catkin_package(
+INCLUDE_DIRS src/
+LIBRARIES ${library_name}
 )
 
 ###########

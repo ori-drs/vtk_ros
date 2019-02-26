@@ -22,7 +22,6 @@ set(VTK_LIBRARIES
   )
 
 
-set(library_name vtkRos)
 add_library(${library_name} ${sources})
 target_link_libraries(${library_name} ${catkin_LIBRARIES}
   ${VTK_LIBRARIES})
