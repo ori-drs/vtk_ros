@@ -60,10 +60,16 @@ void vtkRosInit::Start() {
   }else{
     std::cout << "vtkRosInit: ROS is Initialized. Not running init. This should not happen\n";
   }
+
+  if (!spinner_) {
+    spinner_ = boost::make_shared<ros::AsyncSpinner>(8);
+  }
+  spinner_->start();
 }
 
 
 void vtkRosInit::Stop() {
+  spinner_.reset();
 }
 
 void vtkRosInit::IsInitialized() {

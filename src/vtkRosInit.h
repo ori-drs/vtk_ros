@@ -57,6 +57,8 @@ private:
 
   std::vector< std::string > args;
 
+  boost::shared_ptr<ros::AsyncSpinner> spinner_;
+
 };
 
 #endif // VTKROSINIT_H_

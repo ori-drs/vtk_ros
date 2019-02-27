@@ -44,15 +44,10 @@ void vtkRosPointCloudSubscriber::Start(std::string topic_name) {
   subscriber_ = boost::make_shared<ros::Subscriber>(
         n.subscribe(topic_name, 1000, &vtkRosPointCloudSubscriber::PointCloudCallback, this));
 
-  if (!spinner_) {
-    spinner_ = boost::make_shared<ros::AsyncSpinner>(4);
-  }
-  spinner_->start();
 }
 
 void vtkRosPointCloudSubscriber::Stop() {
   subscriber_->shutdown();
-  spinner_.reset();
 }
 
 void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointCloud2Ptr& message) {
@@ -65,7 +60,7 @@ void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointClou
   vtkSmartPointer<vtkTransform> sensorToLocalTransform = vtkSmartPointer<vtkTransform>::New();
   tf::StampedTransform transform;
   ros::Time time = message->header.stamp;
-  tfListener_->waitForTransform(fixed_frame_, frame_id_, time, ros::Duration(10.0));
+  tfListener_->waitForTransform(fixed_frame_, frame_id_, time, ros::Duration(2.0));
   try {
     tfListener_->lookupTransform(fixed_frame_, frame_id_, time, transform);
     sensorToLocalTransform = transformPolyDataUtils::transformFromPose(transform);
