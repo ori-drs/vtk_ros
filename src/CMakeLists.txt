@@ -2,12 +2,14 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 list(APPEND sources
+    depthImageUtils.cpp
+    transformPolyDataUtils.cpp
     vtkRosGridMapSubscriber.cpp 
     vtkRosPointCloudSubscriber.cpp
     vtkRosDepthImageSubscriber.cpp
     vtkRosInit.cpp
-    depthImageUtils.cpp
-    transformPolyDataUtils.cpp)
+    vtkRosImageSubscriber.cpp
+)
 
 set(VTK_LIBRARIES
   vtkRenderingFreeTypeFontConfig
