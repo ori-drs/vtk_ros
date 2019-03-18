@@ -24,8 +24,6 @@ vtkRosGridMapSubscriber::vtkRosGridMapSubscriber()
   if (!ros::isInitialized()) {
     std::cout << "WARNING: vtkRosGridMapSubscriber: ROS not Initialized\n";
   }
-  tf_listener_ = boost::make_shared<tf::TransformListener>();
-  sensorToLocalTransform_ = vtkSmartPointer<vtkTransform>::New();
   fixed_frame_ = "map"; // or "odom"
 }
 
@@ -49,18 +47,14 @@ void vtkRosGridMapSubscriber::GridMapCallback(const grid_map_msgs::GridMap& mess
   grid_map::GridMapRosConverter::fromMessage(message, inputMap_);
 
   std::string frame_id = message.info.header.frame_id;
-  tf::StampedTransform transform;
   ros::Time time = message.info.header.stamp;
-  tf_listener_->waitForTransform(fixed_frame_, frame_id, time, ros::Duration(2.0));
-  try {
-    tf_listener_->lookupTransform(fixed_frame_, frame_id, time, transform);
-    sensorToLocalTransform_ = transformPolyDataUtils::transformFromPose(transform);
+  try{
+    TransformBetweenFrames(fixed_frame_, frame_id, time);
   }
   catch (tf::TransformException& ex){
     ROS_ERROR("%s",ex.what());
     return;
   }
-
   //we can't modify dataset_ if it's being copied in GetMesh
   std::lock_guard<std::mutex> lock(mutex_);
   CreatePolyData();
@@ -69,7 +63,7 @@ void vtkRosGridMapSubscriber::GridMapCallback(const grid_map_msgs::GridMap& mess
 void vtkRosGridMapSubscriber::CreatePolyData()
 {
   dataset_ = ConvertMesh();
-  transformPolyDataUtils::transformPolyData(dataset_, dataset_, sensorToLocalTransform_);
+  transformPolyDataUtils::transformPolyData(dataset_, dataset_, sensor_to_local_transform_);
 }
 
 vtkSmartPointer<vtkPolyData> vtkRosGridMapSubscriber::ConvertMesh()

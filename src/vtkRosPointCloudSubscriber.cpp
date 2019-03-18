@@ -26,7 +26,6 @@ vtkRosPointCloudSubscriber::vtkRosPointCloudSubscriber()
   if (!ros::isInitialized()) {
     std::cout << "WARNING: vtkRosGridMapSubscriber: ROS not Initialized\n";
   }
-  tfListener_ = boost::make_shared<tf::TransformListener>();
   frame_id_ = "no_frame";
   fixed_frame_ = "map"; // or "odom"
   sec_ = 0;
@@ -57,13 +56,9 @@ void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointClou
   nsec_ = message->header.stamp.nsec;
 
   //
-  vtkSmartPointer<vtkTransform> sensorToLocalTransform = vtkSmartPointer<vtkTransform>::New();
-  tf::StampedTransform transform;
   ros::Time time = message->header.stamp;
-  tfListener_->waitForTransform(fixed_frame_, frame_id_, time, ros::Duration(2.0));
-  try {
-    tfListener_->lookupTransform(fixed_frame_, frame_id_, time, transform);
-    sensorToLocalTransform = transformPolyDataUtils::transformFromPose(transform);
+  try{
+    TransformBetweenFrames(fixed_frame_, frame_id_, time);
   }
   catch (tf::TransformException& ex){
     ROS_ERROR("%s",ex.what());
@@ -73,7 +68,7 @@ void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointClou
   std::lock_guard<std::mutex> lock(mutex_);
   vtkSmartPointer<vtkPolyData> poly_data = ConvertPointCloud2ToVtk(input_);
   vtkSmartPointer<vtkPolyData> transformed_poly_data = vtkSmartPointer<vtkPolyData>::New();
-  transformPolyDataUtils::transformPolyData(poly_data, transformed_poly_data, sensorToLocalTransform);
+  transformPolyDataUtils::transformPolyData(poly_data, transformed_poly_data, sensor_to_local_transform_);
   addPointCloud(transformed_poly_data);
 }
 

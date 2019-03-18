@@ -13,14 +13,16 @@
 #include <vtkDRCFiltersModule.h>
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkPolyData.h>
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
 #include <vtkSmartPointer.h>
+
+#include <rosSubscriberAlgorithm.h>
 
 class vtkImageData;
 class vtkTransform;
 
-class VTKDRCFILTERS_EXPORT vtkRosPointCloudSubscriber : public vtkPolyDataAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosPointCloudSubscriber : public vtkPolyDataAlgorithm, public RosSubscriberAlgorithm
 {
 public:
   vtkTypeMacro(vtkRosPointCloudSubscriber, vtkPolyDataAlgorithm);
@@ -75,7 +77,6 @@ private:
   sensor_msgs::PointCloud2Ptr input_;
 
   boost::shared_ptr<ros::Subscriber> subscriber_;
-  boost::shared_ptr<tf::TransformListener> tfListener_;
   std::mutex mutex_;
 };
 

@@ -17,10 +17,12 @@
 #include "vtkInformationVector.h"
 #include <vtkSmartPointer.h>
 
+#include <rosSubscriberAlgorithm.h>
+
 class vtkImageData;
 class vtkTransform;
 
-class VTKDRCFILTERS_EXPORT vtkRosGridMapSubscriber : public vtkPolyDataAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosGridMapSubscriber : public vtkPolyDataAlgorithm, public RosSubscriberAlgorithm
 {
 public:
   vtkTypeMacro(vtkRosGridMapSubscriber, vtkPolyDataAlgorithm);
@@ -81,10 +83,8 @@ private:
   static float clamp(float x, float lower, float upper);
 
   vtkSmartPointer<vtkPolyData> dataset_;
-  boost::shared_ptr<tf::TransformListener> tf_listener_;
   grid_map::GridMap inputMap_;
   std::string fixed_frame_; // the elevation map is transformed into this frame
-  vtkSmartPointer<vtkTransform> sensorToLocalTransform_;
   std::string colorLayer_;
 
   boost::shared_ptr<ros::Subscriber> subscriber_;
