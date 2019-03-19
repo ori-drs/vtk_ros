@@ -49,6 +49,11 @@ void vtkRosPointCloudSubscriber::Stop() {
   subscriber_->shutdown();
 }
 
+void vtkRosPointCloudSubscriber::ResetTime()
+{
+  RosSubscriberAlgorithm::ResetTime();
+}
+
 void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointCloud2Ptr& message) {
   input_ = message;
   frame_id_ = message->header.frame_id;

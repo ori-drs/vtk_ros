@@ -22,10 +22,10 @@
 class vtkImageData;
 class vtkTransform;
 
-class VTKDRCFILTERS_EXPORT vtkRosPointCloudSubscriber : public vtkPolyDataAlgorithm, public RosSubscriberAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosPointCloudSubscriber : public RosSubscriberAlgorithm
 {
 public:
-  vtkTypeMacro(vtkRosPointCloudSubscriber, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkRosPointCloudSubscriber, RosSubscriberAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkRosPointCloudSubscriber *New();
@@ -53,6 +53,9 @@ public:
   }
 
   void SetNumberOfPointClouds(int number_of_point_clouds);
+
+  //this method is defined in RosSubscriberAlgorithm but it must be redefined here because of a limitation of vtk_wrap_python3
+  void ResetTime();
 
 
 protected:

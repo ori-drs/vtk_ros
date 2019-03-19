@@ -42,6 +42,11 @@ void vtkRosGridMapSubscriber::Stop() {
   subscriber_->shutdown();
 }
 
+void vtkRosGridMapSubscriber::ResetTime()
+{
+  RosSubscriberAlgorithm::ResetTime();
+}
+
 void vtkRosGridMapSubscriber::GridMapCallback(const grid_map_msgs::GridMap& message) {
   // Convert message to map.
   grid_map::GridMapRosConverter::fromMessage(message, inputMap_);

@@ -54,6 +54,11 @@ void vtkRosDepthImageSubscriber::Stop()
   info_b_sub_->unsubscribe();
 }
 
+void vtkRosDepthImageSubscriber::ResetTime()
+{
+  RosSubscriberAlgorithm::ResetTime();
+}
+
 void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageConstPtr& image_a,
                                                     const sensor_msgs::CameraInfoConstPtr& info_a,
                                                     const sensor_msgs::ImageConstPtr& image_b,

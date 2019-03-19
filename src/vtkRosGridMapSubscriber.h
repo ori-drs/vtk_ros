@@ -22,10 +22,10 @@
 class vtkImageData;
 class vtkTransform;
 
-class VTKDRCFILTERS_EXPORT vtkRosGridMapSubscriber : public vtkPolyDataAlgorithm, public RosSubscriberAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosGridMapSubscriber : public RosSubscriberAlgorithm
 {
 public:
-  vtkTypeMacro(vtkRosGridMapSubscriber, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkRosGridMapSubscriber, RosSubscriberAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkRosGridMapSubscriber *New();
@@ -43,6 +43,8 @@ public:
   void SetFixedFrame(const std::string& fixed_frame_in){
     fixed_frame_ = fixed_frame_in;
   }
+
+  void ResetTime();
 
 protected:
 

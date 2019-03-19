@@ -49,6 +49,11 @@ void vtkRosImageSubscriber::Stop()
   info_sub_->unsubscribe();
 }
 
+void vtkRosImageSubscriber::ResetTime()
+{
+  RosSubscriberAlgorithm::ResetTime();
+}
+
 void vtkRosImageSubscriber::ImageCallback(const sensor_msgs::ImageConstPtr& image,
                                           const sensor_msgs::CameraInfoConstPtr& info)
 {

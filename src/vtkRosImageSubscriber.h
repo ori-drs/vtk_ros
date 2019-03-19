@@ -29,10 +29,10 @@
 
 #include <rosSubscriberAlgorithm.h>
 
-class VTKDRCFILTERS_EXPORT vtkRosImageSubscriber : public vtkPolyDataAlgorithm, public RosSubscriberAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosImageSubscriber : public RosSubscriberAlgorithm
 {
 public:
-  vtkTypeMacro(vtkRosImageSubscriber, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkRosImageSubscriber, RosSubscriberAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkRosImageSubscriber *New();
@@ -49,6 +49,8 @@ public:
   void ComputeTextureCoords(const std::string& camera_name, vtkPolyData* poly_data) const;
 
   void GetBodyToCameraTransform(vtkTransform* transform) const;
+
+  void ResetTime();
 
 
 protected:
