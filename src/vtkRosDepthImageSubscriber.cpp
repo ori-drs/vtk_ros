@@ -80,7 +80,6 @@ void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageCons
     ROS_ERROR("%s",ex.what());
     return;
   }
-
   std::lock_guard<std::mutex> lock(mutex_);
   vtkSmartPointer<vtkPolyData> polyData = transformPolyDataUtils::PolyDataFromPointCloud(cloud);
   transformPolyDataUtils::transformPolyData(polyData, dataset_, sensorToLocalTransform);
