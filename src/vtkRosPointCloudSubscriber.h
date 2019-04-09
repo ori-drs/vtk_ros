@@ -16,6 +16,7 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkSmartPointer.h>
+#include <vtkAppendPolyData.h>
 
 #include <rosSubscriberAlgorithm.h>
 
@@ -34,7 +35,13 @@ public:
 
   void Stop();
 
-  void GetPointCloud(vtkPolyData* polyData);
+  /**
+   * @brief GetPointCloud
+   * @param polyData
+   * @param only_new_data, if true return a point cloud if the current data is different from
+   * the data returned by the previous call of this method
+   */
+  void GetPointCloud(vtkPolyData* polyData, bool only_new_data = false);
 
   std::string GetFrameId(){
     return frame_id_;
@@ -55,6 +62,9 @@ public:
   void SetNumberOfPointClouds(int number_of_point_clouds);
 
   //this method is defined in RosSubscriberAlgorithm but it must be redefined here because of a limitation of vtk_wrap_python3
+  /**
+   * @brief ResetTime reset the transform listener
+   */
   void ResetTime();
 
 
@@ -71,7 +81,11 @@ private:
 
   void addPointCloud(const vtkSmartPointer<vtkPolyData>& poly_data);
 
+  /**
+   * @brief dataset_ is a deque of the most recent point clouds received
+   */
   std::deque<vtkSmartPointer<vtkPolyData> > dataset_;
+  vtkSmartPointer<vtkAppendPolyData> append_poly_data_;
   std::string frame_id_;
   std::string fixed_frame_;
   long sec_;
