@@ -25,6 +25,7 @@ void vtkRosDepthImageSubscriber::Start(const std::string& image_topic_a, const s
                                        const std::string& info_topic_a, const std::string& image_topic_b,
                                        const std::string& image_b_transport, const std::string& info_topic_b)
 {
+  dataset_ = vtkSmartPointer<vtkPolyData>::New();
   ros::NodeHandle node;
 
   image_a_sub_ = boost::make_shared<image_transport::SubscriberFilter>();
@@ -81,18 +82,20 @@ void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageCons
     return;
   }
   std::lock_guard<std::mutex> lock(mutex_);
+  new_data_ = true;
   vtkSmartPointer<vtkPolyData> polyData = transformPolyDataUtils::PolyDataFromPointCloud(cloud);
   transformPolyDataUtils::transformPolyData(polyData, dataset_, sensor_to_local_transform_);
 }
 
-void vtkRosDepthImageSubscriber::GetPointCloud(vtkPolyData* poly_data)
+void vtkRosDepthImageSubscriber::GetPointCloud(vtkPolyData* poly_data, bool only_new_data)
 {
-  if (!poly_data || !dataset_)
+  if (!poly_data || !dataset_  || (only_new_data && !new_data_))
   {
     return;
   }
 
   std::lock_guard<std::mutex> lock(mutex_);
+  new_data_ = false;
   poly_data->DeepCopy(dataset_);
 }
 

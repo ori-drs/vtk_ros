@@ -34,7 +34,13 @@ public:
 
   void Stop();
 
-  void GetMesh(vtkPolyData* polyData);
+  /**
+   * @brief GetMesh
+   * @param polyData
+   * @param only_new_data, if true return a point cloud if the current data is different from
+   * the data returned by the previous call of this method
+   */
+  void GetMesh(vtkPolyData* polyData, bool only_new_data = false);
 
   void GetPointCloud(vtkPolyData* polyData);
 
@@ -44,6 +50,9 @@ public:
     fixed_frame_ = fixed_frame_in;
   }
 
+  /**
+   * @brief ResetTime reset the transform listener
+   */
   void ResetTime();
 
 protected:

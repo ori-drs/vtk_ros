@@ -50,6 +50,9 @@ public:
 
   void GetBodyToCameraTransform(vtkTransform* transform) const;
 
+  /**
+   * @brief ResetTime reset the transform listener
+   */
   void ResetTime();
 
 

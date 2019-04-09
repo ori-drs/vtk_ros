@@ -33,6 +33,7 @@ vtkRosGridMapSubscriber::~vtkRosGridMapSubscriber() {
 
 
 void vtkRosGridMapSubscriber::Start() {
+  dataset_ = 0;
   ros::NodeHandle n;
   subscriber_ = boost::make_shared<ros::Subscriber>(
         n.subscribe("/elevation_mapping/elevation_map", 1000, &vtkRosGridMapSubscriber::GridMapCallback, this));
@@ -62,6 +63,7 @@ void vtkRosGridMapSubscriber::GridMapCallback(const grid_map_msgs::GridMap& mess
   }
   //we can't modify dataset_ if it's being copied in GetMesh
   std::lock_guard<std::mutex> lock(mutex_);
+  new_data_ = true;
   CreatePolyData();
 }
 
@@ -224,15 +226,16 @@ void vtkRosGridMapSubscriber::SetColorLayer(const std::string& colorLayer) {
   CreatePolyData();
 }
 
-void vtkRosGridMapSubscriber::GetMesh(vtkPolyData* polyData)
+void vtkRosGridMapSubscriber::GetMesh(vtkPolyData* polyData, bool only_new_data)
 {
-  if (!polyData || !dataset_)
+  if (!polyData || !dataset_ || (only_new_data && !new_data_))
   {
     return;
   }
 
   //we can't copy dataset_ if it's being modified in GridMapCallback
   std::lock_guard<std::mutex> lock(mutex_);
+  new_data_ = false;
   polyData->DeepCopy(dataset_);
 }
 
