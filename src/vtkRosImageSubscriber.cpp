@@ -18,7 +18,6 @@ vtkRosImageSubscriber::vtkRosImageSubscriber()
   if (!ros::isInitialized()) {
     ROS_DEBUG("WARNING: ROS not Initialized");
   }
-  tf_listener_ = boost::make_shared<tf::TransformListener>();
 }
 
 vtkRosImageSubscriber::~vtkRosImageSubscriber()
@@ -50,19 +49,21 @@ void vtkRosImageSubscriber::Stop()
   info_sub_->unsubscribe();
 }
 
+void vtkRosImageSubscriber::ResetTime()
+{
+  RosSubscriberAlgorithm::ResetTime();
+}
+
 void vtkRosImageSubscriber::ImageCallback(const sensor_msgs::ImageConstPtr& image,
                                           const sensor_msgs::CameraInfoConstPtr& info)
 {
-   if (!body_to_camera_transform_)
+   if (!sensor_to_local_transform_)
    {
      //The transform between the camera and the base doesn't change so it's only computed once
      std::string frame_id = image->header.frame_id;
-     tf::StampedTransform transform;
      ros::Time time = image->header.stamp;
-     tf_listener_->waitForTransform(frame_id, "base", time, ros::Duration(2.0));
-     try {
-       tf_listener_->lookupTransform(frame_id, "base", time, transform);
-       body_to_camera_transform_ = transformPolyDataUtils::transformFromPose(transform);
+     try{
+       TransformBetweenFrames(frame_id,  "base", time);
      }
      catch (tf::TransformException& ex){
        ROS_ERROR("%s",ex.what());
@@ -161,13 +162,13 @@ void vtkRosImageSubscriber::ComputeTextureCoords(const std::string& camera_name,
 
 void vtkRosImageSubscriber::GetBodyToCameraTransform(vtkTransform* transform) const
 {
-  if (!body_to_camera_transform_)
+  if (!sensor_to_local_transform_)
   {
     return;
   }
 
   std::lock_guard<std::mutex> lock(mutex_);
-  transform->DeepCopy(body_to_camera_transform_);
+  transform->DeepCopy(sensor_to_local_transform_);
 }
 
 void vtkRosImageSubscriber::PrintSelf(ostream& os, vtkIndent indent)

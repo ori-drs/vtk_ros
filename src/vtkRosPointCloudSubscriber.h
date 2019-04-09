@@ -13,17 +13,19 @@
 #include <vtkDRCFiltersModule.h>
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkPolyData.h>
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
 #include <vtkSmartPointer.h>
+
+#include <rosSubscriberAlgorithm.h>
 
 class vtkImageData;
 class vtkTransform;
 
-class VTKDRCFILTERS_EXPORT vtkRosPointCloudSubscriber : public vtkPolyDataAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosPointCloudSubscriber : public RosSubscriberAlgorithm
 {
 public:
-  vtkTypeMacro(vtkRosPointCloudSubscriber, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkRosPointCloudSubscriber, RosSubscriberAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkRosPointCloudSubscriber *New();
@@ -52,6 +54,9 @@ public:
 
   void SetNumberOfPointClouds(int number_of_point_clouds);
 
+  //this method is defined in RosSubscriberAlgorithm but it must be redefined here because of a limitation of vtk_wrap_python3
+  void ResetTime();
+
 
 protected:
 
@@ -75,7 +80,6 @@ private:
   sensor_msgs::PointCloud2Ptr input_;
 
   boost::shared_ptr<ros::Subscriber> subscriber_;
-  boost::shared_ptr<tf::TransformListener> tfListener_;
   std::mutex mutex_;
 };
 

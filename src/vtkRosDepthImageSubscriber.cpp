@@ -10,7 +10,6 @@ vtkRosDepthImageSubscriber::vtkRosDepthImageSubscriber()
   if (!ros::isInitialized()) {
     std::cout << "WARNING: vtkRosGridMapSubscriber: ROS not Initialized\n";
   }
-  tf_listener_ = boost::make_shared<tf::TransformListener>();
   dataset_ = vtkSmartPointer<vtkPolyData>::New();
   fixed_frame_ = "map"; // or "odom"
   sec_ = 0;
@@ -55,6 +54,11 @@ void vtkRosDepthImageSubscriber::Stop()
   info_b_sub_->unsubscribe();
 }
 
+void vtkRosDepthImageSubscriber::ResetTime()
+{
+  RosSubscriberAlgorithm::ResetTime();
+}
+
 void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageConstPtr& image_a,
                                                     const sensor_msgs::CameraInfoConstPtr& info_a,
                                                     const sensor_msgs::ImageConstPtr& image_b,
@@ -68,22 +72,17 @@ void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageCons
 
   //
   std::string frame_id = image_b->header.frame_id;
-  vtkSmartPointer<vtkTransform> sensorToLocalTransform = vtkSmartPointer<vtkTransform>::New();
-  tf::StampedTransform transform;
   ros::Time time = image_a->header.stamp;
-  tf_listener_->waitForTransform(fixed_frame_, frame_id, time, ros::Duration(2.0));
   try {
-    tf_listener_->lookupTransform(fixed_frame_, frame_id, time, transform);
-    sensorToLocalTransform = transformPolyDataUtils::transformFromPose(transform);
+    TransformBetweenFrames(fixed_frame_, frame_id, time);
   }
   catch (tf::TransformException& ex){
     ROS_ERROR("%s",ex.what());
     return;
   }
-
   std::lock_guard<std::mutex> lock(mutex_);
   vtkSmartPointer<vtkPolyData> polyData = transformPolyDataUtils::PolyDataFromPointCloud(cloud);
-  transformPolyDataUtils::transformPolyData(polyData, dataset_, sensorToLocalTransform);
+  transformPolyDataUtils::transformPolyData(polyData, dataset_, sensor_to_local_transform_);
 }
 
 void vtkRosDepthImageSubscriber::GetPointCloud(vtkPolyData* poly_data)

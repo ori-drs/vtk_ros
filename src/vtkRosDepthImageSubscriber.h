@@ -26,14 +26,15 @@
 #include <vtkSmartPointer.h>
 
 #include <depthImageUtils.h>
+#include <rosSubscriberAlgorithm.h>
 
 class vtkImageData;
 class vtkTransform;
 
-class VTKDRCFILTERS_EXPORT vtkRosDepthImageSubscriber : public vtkPolyDataAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosDepthImageSubscriber : public RosSubscriberAlgorithm
 {
 public:
-  vtkTypeMacro(vtkRosDepthImageSubscriber, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkRosDepthImageSubscriber, RosSubscriberAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkRosDepthImageSubscriber *New();
@@ -63,6 +64,8 @@ public:
     fixed_frame_ = fixed_frame_in;
   }
 
+  void ResetTime();
+
 protected:
 
   vtkRosDepthImageSubscriber();
@@ -81,7 +84,6 @@ private:
 
 
   vtkSmartPointer<vtkPolyData> dataset_;
-  boost::shared_ptr<tf::TransformListener> tf_listener_;
   DepthImageUtils utils_;
   std::string fixed_frame_;
   long sec_;

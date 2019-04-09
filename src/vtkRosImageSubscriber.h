@@ -27,10 +27,12 @@
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
 
-class VTKDRCFILTERS_EXPORT vtkRosImageSubscriber : public vtkPolyDataAlgorithm
+#include <rosSubscriberAlgorithm.h>
+
+class VTKDRCFILTERS_EXPORT vtkRosImageSubscriber : public RosSubscriberAlgorithm
 {
 public:
-  vtkTypeMacro(vtkRosImageSubscriber, vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkRosImageSubscriber, RosSubscriberAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkRosImageSubscriber *New();
@@ -48,6 +50,8 @@ public:
 
   void GetBodyToCameraTransform(vtkTransform* transform) const;
 
+  void ResetTime();
+
 
 protected:
 
@@ -62,11 +66,8 @@ private:
   void ImageCallback(const sensor_msgs::ImageConstPtr& image,
                      const sensor_msgs::CameraInfoConstPtr& info);
 
-  bool first_data_received_;
-  vtkSmartPointer<vtkTransform> body_to_camera_transform_;
   vtkSmartPointer<vtkImageData> dataset_;
   sensor_msgs::CameraInfo camera_info_;
-  boost::shared_ptr<tf::TransformListener> tf_listener_;
   ros::Time time_;
 
   boost::shared_ptr<image_transport::SubscriberFilter> image_sub_;
