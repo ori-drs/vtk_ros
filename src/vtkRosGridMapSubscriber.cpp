@@ -160,17 +160,18 @@ vtkSmartPointer<vtkPolyData> vtkRosGridMapSubscriber::ConvertMesh()
   triangle->GetPointIds()->SetId(1, count_point + 1);
   triangle->GetPointIds()->SetId(2, count_point + 2);
   cellArray->InsertNextCell(triangle);*/
-  vtkSmartPointer<vtkIdTypeArray> cellsPtr = vtkIdTypeArray::New();
+  vtkSmartPointer<vtkIdTypeArray> cellsPtr = vtkSmartPointer<vtkIdTypeArray>::New();
   vtkIdType* vtkCells = (vtkIdType*)malloc(4*sizeof(vtkIdType)*numCells);
   vtkIdType* ptr = vtkCells;
   for(int i = 0; i < numCells; ++i) {
-    *ptr = 3;
+    *ptr = 3; // number of points followed by points ids
     *(ptr + 1) = i*3;
     *(ptr + 2) = i*3 + 1;
     *(ptr + 3) = i*3 + 2;
     ptr += 4;
   }
   cellsPtr->SetArray(vtkCells, 4*numCells, 0);
+  //cellsPtr->SetVoidArray(vtkCells, 4*numCells, 0);
   cellArray->SetCells(numCells, cellsPtr);
 
   // inserting the points and their colors

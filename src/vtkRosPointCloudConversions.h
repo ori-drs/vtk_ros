@@ -34,11 +34,11 @@ vtkSmartPointer<vtkCellArray> NewVertexCells(vtkIdType numberOfVerts)
 }
 
 // ----------------------------------------------------------------------------
-vtkPolyData* ConvertPointCloud2ToVtk(const sensor_msgs::PointCloud2Ptr& msg) {
+vtkSmartPointer<vtkPolyData> ConvertPointCloud2ToVtk(const sensor_msgs::PointCloud2Ptr& msg) {
 
   const size_t numberOfPoints = msg->height*msg->width;
 
-  vtkPolyData* polyData = vtkPolyData::New();
+  vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
   points->SetDataTypeToFloat();
   points->Allocate(numberOfPoints);
