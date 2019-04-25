@@ -30,6 +30,10 @@ void vtkRosImageSubscriber::Start(const std::string& image_topic, const std::str
 {
   ros::NodeHandle node;
 
+  image_topic_ = image_topic;
+  image_transport_ = image_transport;
+  info_topic_ = info_topic;
+
   image_sub_ = boost::make_shared<image_transport::SubscriberFilter>();
   it_ = boost::make_shared<image_transport::ImageTransport>(node);
   image_sub_->subscribe(*it_, ros::names::resolve(image_topic), 100, image_transport::TransportHints( image_transport ));
@@ -47,11 +51,20 @@ void vtkRosImageSubscriber::Stop()
 {
   image_sub_->unsubscribe();
   info_sub_->unsubscribe();
+  sync_.reset();
 }
 
 void vtkRosImageSubscriber::ResetTime()
 {
   RosSubscriberAlgorithm::ResetTime();
+
+  // reset subscriber to empty queue of incoming messages
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (image_sub_)
+  {
+    Stop();
+    Start(image_topic_, image_transport_, info_topic_);
+  }
 }
 
 void vtkRosImageSubscriber::ImageCallback(const sensor_msgs::ImageConstPtr& image,

@@ -28,6 +28,13 @@ void vtkRosDepthImageSubscriber::Start(const std::string& image_topic_a, const s
   dataset_ = vtkSmartPointer<vtkPolyData>::New();
   ros::NodeHandle node;
 
+  image_topic_a_ = image_topic_a;
+  image_a_transport_ = image_a_transport;
+  info_topic_a_ = info_topic_a;
+  image_topic_b_ = image_topic_b;
+  image_b_transport_ = image_b_transport;
+  info_topic_b_ = info_topic_b;
+
   image_a_sub_ = boost::make_shared<image_transport::SubscriberFilter>();
   image_b_sub_ = boost::make_shared<image_transport::SubscriberFilter>();
   it_ = boost::make_shared<image_transport::ImageTransport>(node);
@@ -53,11 +60,22 @@ void vtkRosDepthImageSubscriber::Stop()
 
   info_a_sub_->unsubscribe();
   info_b_sub_->unsubscribe();
+
+  sync_.reset();
 }
 
 void vtkRosDepthImageSubscriber::ResetTime()
 {
   RosSubscriberAlgorithm::ResetTime();
+
+  // reset subscriber to empty queue of incoming messages
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (image_a_sub_)
+  {
+    Stop();
+    Start(image_topic_a_, image_a_transport_, info_topic_a_,
+          image_topic_b_, image_b_transport_, info_topic_b_);
+  }
 }
 
 void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageConstPtr& image_a,
