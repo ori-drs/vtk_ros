@@ -95,6 +95,7 @@ private:
 
   boost::shared_ptr<ros::Subscriber> subscriber_;
   std::mutex mutex_;
+  std::string topic_name_;
 };
 
 #endif // VTKROSPOINTCLOUDSUBSCRIBER_H_

@@ -103,6 +103,9 @@ private:
   boost::shared_ptr<message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo, sensor_msgs::Image,
       sensor_msgs::CameraInfo> > sync_;
 
+  std::string image_topic_a_, image_a_transport_, info_topic_a_;
+  std::string image_topic_b_, image_b_transport_, info_topic_b_;
+
   boost::shared_ptr<image_transport::ImageTransport> it_;
   std::mutex mutex_;
 };

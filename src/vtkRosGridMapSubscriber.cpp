@@ -46,6 +46,14 @@ void vtkRosGridMapSubscriber::Stop() {
 void vtkRosGridMapSubscriber::ResetTime()
 {
   RosSubscriberAlgorithm::ResetTime();
+
+  // reset subscriber to empty queue of incoming messages
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (subscriber_)
+  {
+    Stop();
+    Start();
+  }
 }
 
 void vtkRosGridMapSubscriber::GridMapCallback(const grid_map_msgs::GridMap& message) {

@@ -40,6 +40,7 @@ void vtkRosPointCloudSubscriber::Start(std::string topic_name) {
 
   append_poly_data_ = vtkSmartPointer<vtkAppendPolyData>::New();
   dataset_.clear();
+  topic_name_ = topic_name;
 
   ros::NodeHandle n;
   subscriber_ = boost::make_shared<ros::Subscriber>(
@@ -54,6 +55,14 @@ void vtkRosPointCloudSubscriber::Stop() {
 void vtkRosPointCloudSubscriber::ResetTime()
 {
   RosSubscriberAlgorithm::ResetTime();
+
+  // reset subscriber to empty queue of incoming messages
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (subscriber_)
+  {
+    Stop();
+    Start(topic_name_);
+  }
 }
 
 void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointCloud2Ptr& message) {
