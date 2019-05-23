@@ -14,6 +14,7 @@
 vtkStandardNewMacro(vtkRosImageSubscriber);
 
 vtkRosImageSubscriber::vtkRosImageSubscriber()
+  :camera_transform_initialized_(false)
 {
   if (!ros::isInitialized()) {
     ROS_DEBUG("WARNING: ROS not Initialized");
@@ -70,11 +71,12 @@ void vtkRosImageSubscriber::ResetTime()
 void vtkRosImageSubscriber::ImageCallback(const sensor_msgs::ImageConstPtr& image,
                                           const sensor_msgs::CameraInfoConstPtr& info)
 {
-   if (!sensor_to_local_transform_)
+   if (!camera_transform_initialized_)
    {
      //The transform between the camera and the base doesn't change so it's only computed once
      std::string frame_id = image->header.frame_id;
      ros::Time time = image->header.stamp;
+     camera_transform_initialized_ = true;
      try{
        TransformBetweenFrames(frame_id,  "base", time);
      }

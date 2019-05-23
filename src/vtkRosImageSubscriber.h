@@ -71,6 +71,7 @@ private:
 
   vtkSmartPointer<vtkImageData> dataset_;
   sensor_msgs::CameraInfo camera_info_;
+  bool camera_transform_initialized_;
   ros::Time time_;
 
   boost::shared_ptr<image_transport::SubscriberFilter> image_sub_;
