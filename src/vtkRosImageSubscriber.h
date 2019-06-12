@@ -41,7 +41,10 @@ public:
              const std::string& info_topic);
 
   void Stop();
-
+  /**
+   * @brief GetCurrentImageTime returns the time of the last image received. It returns 0 if no data is received
+   * @return
+   */
   unsigned long long GetCurrentImageTime() const;
 
   void GetImage(vtkImageData* image);
