@@ -30,7 +30,7 @@ public:
 
   static vtkRosGridMapSubscriber *New();
 
-  void Start();
+  void Start(const std::string& topic_name);
 
   void Stop();
 
@@ -97,6 +97,7 @@ private:
   grid_map::GridMap inputMap_;
   std::string fixed_frame_; // the elevation map is transformed into this frame
   std::string colorLayer_;
+  std::string topic_name_;
 
   boost::shared_ptr<ros::Subscriber> subscriber_;
   std::mutex mutex_;

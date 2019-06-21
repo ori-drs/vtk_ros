@@ -32,11 +32,12 @@ vtkRosGridMapSubscriber::~vtkRosGridMapSubscriber() {
 }
 
 
-void vtkRosGridMapSubscriber::Start() {
+void vtkRosGridMapSubscriber::Start(const std::string &topic_name) {
+  topic_name_ = topic_name;
   dataset_ = 0;
   ros::NodeHandle n;
   subscriber_ = boost::make_shared<ros::Subscriber>(
-        n.subscribe("/elevation_mapping/elevation_map", 1000, &vtkRosGridMapSubscriber::GridMapCallback, this));
+        n.subscribe(topic_name_, 1000, &vtkRosGridMapSubscriber::GridMapCallback, this));
 }
 
 void vtkRosGridMapSubscriber::Stop() {
@@ -52,7 +53,7 @@ void vtkRosGridMapSubscriber::ResetTime()
   if (subscriber_)
   {
     Stop();
-    Start();
+    Start(topic_name_);
   }
 }
 
