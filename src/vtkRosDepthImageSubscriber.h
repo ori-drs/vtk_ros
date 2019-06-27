@@ -18,6 +18,8 @@
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
+#include <depth_image_utils/depth_image_utils.hpp>
+
 #include <vtkDRCFiltersModule.h>
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkPolyData.h>
@@ -25,7 +27,7 @@
 #include <vtkInformationVector.h>
 #include <vtkSmartPointer.h>
 
-#include <depthImageUtils.h>
+
 #include <rosSubscriberAlgorithm.h>
 
 class vtkImageData;

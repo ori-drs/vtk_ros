@@ -2,7 +2,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 list(APPEND sources
-    depthImageUtils.cpp
     rosSubscriberAlgorithm.cpp
     transformPolyDataUtils.cpp
     vtkRosGridMapSubscriber.cpp 
