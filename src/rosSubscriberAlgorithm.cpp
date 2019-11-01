@@ -17,13 +17,12 @@ RosSubscriberAlgorithm::~RosSubscriberAlgorithm()
 {
 }
 
-void RosSubscriberAlgorithm::TransformBetweenFrames(const std::string& target_frame, const std::string& source_frame,
-                                                    const ros::Time& time)
+void RosSubscriberAlgorithm::TransformBetweenFrames(const std::string& target_frame, const std::string& source_frame)
 {
   tf::StampedTransform transform;
-  tf_listener_->waitForTransform(target_frame, source_frame, time, ros::Duration(0.3));
 
-  tf_listener_->lookupTransform(target_frame, source_frame, time, transform);
+  // return the latest transform between target_frame and source_frame
+  tf_listener_->lookupTransform(target_frame, source_frame, ros::Time(0), transform);
   sensor_to_local_transform_ = transformPolyDataUtils::transformFromPose(transform);
 
 

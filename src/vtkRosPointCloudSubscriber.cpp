@@ -74,10 +74,8 @@ void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointClou
   sec_ = message->header.stamp.sec;
   nsec_ = message->header.stamp.nsec;
 
-  //
-  ros::Time time = message->header.stamp;
   try{
-    TransformBetweenFrames(fixed_frame_, frame_id_, time);
+    TransformBetweenFrames(fixed_frame_, frame_id_);
   }
   catch (tf::TransformException& ex){
     ROS_ERROR("%s",ex.what());

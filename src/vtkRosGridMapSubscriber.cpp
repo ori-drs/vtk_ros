@@ -62,9 +62,8 @@ void vtkRosGridMapSubscriber::GridMapCallback(const grid_map_msgs::GridMap& mess
   grid_map::GridMapRosConverter::fromMessage(message, inputMap_);
 
   std::string frame_id = message.info.header.frame_id;
-  ros::Time time = message.info.header.stamp;
   try{
-    TransformBetweenFrames(fixed_frame_, frame_id, time);
+    TransformBetweenFrames(fixed_frame_, frame_id);
   }
   catch (tf::TransformException& ex){
     ROS_ERROR("%s",ex.what());

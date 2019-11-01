@@ -91,9 +91,8 @@ void vtkRosDepthImageSubscriber::DepthImageCallback(const sensor_msgs::ImageCons
 
   //
   std::string frame_id = image_b->header.frame_id;
-  ros::Time time = image_a->header.stamp;
   try {
-    TransformBetweenFrames(fixed_frame_, frame_id, time);
+    TransformBetweenFrames(fixed_frame_, frame_id);
   }
   catch (tf::TransformException& ex){
     ROS_ERROR("%s",ex.what());
