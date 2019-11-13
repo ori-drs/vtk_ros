@@ -9,7 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   image_utils
   depth_image_utils
   image_transport
-  grid_map_ros)
+  grid_map_ros
+  pcl_plugin)
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})

@@ -14,7 +14,10 @@
 #include <vtkPolygon.h>
 #include <vtkTriangle.h>
 #include <vtkRosPointCloudConversions.h>
+#include <vtkPCLConversions.cxx>
 #include <vtkObjectFactory.h>
+
+#include <pcl_conversions/pcl_conversions.h>
 
 #include "transformPolyDataUtils.h"
 
@@ -83,7 +86,7 @@ void vtkRosPointCloudSubscriber::PointCloudCallback(const sensor_msgs::PointClou
 
   std::lock_guard<std::mutex> lock(mutex_);
   new_data_ = true;
-  vtkSmartPointer<vtkPolyData> poly_data = ConvertPointCloud2ToVtk(input_);
+  vtkSmartPointer<vtkPolyData> poly_data = convertPointCloud2ToVtk(input_);
   vtkSmartPointer<vtkPolyData> transformed_poly_data = vtkSmartPointer<vtkPolyData>::New();
   transformPolyDataUtils::transformPolyData(poly_data, transformed_poly_data, sensor_to_local_transform_);
   addPointCloud(transformed_poly_data);
@@ -100,6 +103,13 @@ void vtkRosPointCloudSubscriber::GetPointCloud(vtkPolyData* polyData, bool only_
   std::lock_guard<std::mutex> lock(mutex_);
   new_data_ = false;
   polyData->DeepCopy(append_poly_data_->GetOutput());
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosPointCloudSubscriber::convertPointCloud2ToVtk(const sensor_msgs::PointCloud2Ptr& msg)
+{
+  pcl::PCLPointCloud2 cloud;
+  pcl_conversions::moveToPCL(*msg, cloud);
+  return vtkPCLConversions::ConvertPointCloud2ToVtk(cloud);
 }
 
 void vtkRosPointCloudSubscriber::addPointCloud(const vtkSmartPointer<vtkPolyData>& poly_data)

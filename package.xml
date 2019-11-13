@@ -54,6 +54,7 @@
   <depend>image_utils</depend>
   <depend>depth_image_utils</depend>
   <depend>image_transport</depend>
+  <depend>pcl_plugin</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

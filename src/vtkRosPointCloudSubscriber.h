@@ -81,6 +81,8 @@ private:
 
   void addPointCloud(const vtkSmartPointer<vtkPolyData>& poly_data);
 
+  vtkSmartPointer<vtkPolyData> convertPointCloud2ToVtk(const sensor_msgs::PointCloud2Ptr& msg);
+
   /**
    * @brief dataset_ is a deque of the most recent point clouds received
    */
