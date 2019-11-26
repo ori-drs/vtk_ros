@@ -42,7 +42,8 @@ public:
    */
   void GetMesh(vtkPolyData* polyData);
 
-  void SetFixedFrame(const std::string& fixed_frame_in){
+  void SetFixedFrame(const std::string& fixed_frame_in)
+  {
     fixed_frame_ = fixed_frame_in;
   }
 
@@ -63,6 +64,16 @@ private:
   void Callback(const visualization_msgs::MarkerPtr& message);
 
   vtkSmartPointer<vtkPolyData> ConvertMarker(const visualization_msgs::MarkerPtr& message);
+
+  void ApplyColor(vtkSmartPointer<vtkPolyData> &polyData, const visualization_msgs::MarkerPtr& message);
+
+  vtkSmartPointer<vtkPolyData> ConvertTriangleList(const visualization_msgs::MarkerPtr& message);
+
+  vtkSmartPointer<vtkPolyData> ConvertSphere(const visualization_msgs::MarkerPtr& message);
+
+  vtkSmartPointer<vtkPolyData> ConvertCylinder(const visualization_msgs::MarkerPtr& message);
+
+  vtkSmartPointer<vtkPolyData> ConvertLineList(const visualization_msgs::MarkerPtr& message);
 
   vtkSmartPointer<vtkPolyData> dataset_;
   std::string fixed_frame_; // the elevation map is transformed into this frame
