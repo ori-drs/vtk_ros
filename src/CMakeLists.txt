@@ -5,6 +5,8 @@ list(APPEND sources
     rosSubscriberAlgorithm.cpp
     transformPolyDataUtils.cpp
     vtkRosGridMapSubscriber.cpp
+    vtkRosMarker.cpp
+    vtkRosMarkerArraySubscriber.cpp
     vtkRosMarkerSubscriber.cpp 
     vtkRosPointCloudSubscriber.cpp
     vtkRosDepthImageSubscriber.cpp

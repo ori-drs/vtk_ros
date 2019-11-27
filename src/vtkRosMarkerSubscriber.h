@@ -1,5 +1,5 @@
-#ifndef VTKROSMARKER_H_
-#define VTKROSMARKER_H_
+#ifndef VTKROSMARKERSUBSCRIBER_H_
+#define VTKROSMARKERSUBSCRIBER_H_
 
 
 #include <mutex>
@@ -19,15 +19,15 @@
 #include "vtkInformationVector.h"
 #include <vtkSmartPointer.h>
 
-#include <rosSubscriberAlgorithm.h>
+#include <vtkRosMarker.h>
 
 class vtkImageData;
 class vtkTransform;
 
-class VTKDRCFILTERS_EXPORT vtkRosMarkerSubscriber : public RosSubscriberAlgorithm
+class VTKDRCFILTERS_EXPORT vtkRosMarkerSubscriber : public vtkRosMarker
 {
 public:
-  vtkTypeMacro(vtkRosMarkerSubscriber, RosSubscriberAlgorithm);
+  vtkTypeMacro(vtkRosMarkerSubscriber, vtkRosMarker);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkRosMarkerSubscriber *New();
@@ -47,11 +47,6 @@ public:
     fixed_frame_ = fixed_frame_in;
   }
 
-  /**
-   * @brief ResetTime reset the transform listener
-   */
-  //void ResetTime();
-
 protected:
 
   vtkRosMarkerSubscriber();
@@ -63,24 +58,7 @@ private:
 
   void Callback(const visualization_msgs::MarkerPtr& message);
 
-  vtkSmartPointer<vtkPolyData> ConvertMarker(const visualization_msgs::MarkerPtr& message);
-
-  void ApplyColor(vtkSmartPointer<vtkPolyData> &polyData, const visualization_msgs::MarkerPtr& message);
-
-  vtkSmartPointer<vtkPolyData> ConvertTriangleList(const visualization_msgs::MarkerPtr& message);
-
-  vtkSmartPointer<vtkPolyData> ConvertSphere(const visualization_msgs::MarkerPtr& message);
-
-  vtkSmartPointer<vtkPolyData> ConvertCylinder(const visualization_msgs::MarkerPtr& message);
-
-  vtkSmartPointer<vtkPolyData> ConvertLineList(const visualization_msgs::MarkerPtr& message);
-
   vtkSmartPointer<vtkPolyData> dataset_;
-  std::string fixed_frame_; // the elevation map is transformed into this frame
-  std::string topic_name_;
-
-  boost::shared_ptr<ros::Subscriber> subscriber_;
-  std::mutex mutex_;
 };
 
-#endif // VTKROSMARKER_H_
+#endif // VTKROSMARKERSUBSCRIBER_H_
