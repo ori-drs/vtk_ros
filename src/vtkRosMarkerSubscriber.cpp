@@ -29,6 +29,7 @@ vtkRosMarkerSubscriber::vtkRosMarkerSubscriber()
     std::cout << "WARNING: vtkRosMarkerSubscriber: ROS not Initialized\n";
   }
   fixed_frame_ = "map"; // or "odom"
+  dataset_ = 0;
 }
 
 vtkRosMarkerSubscriber::~vtkRosMarkerSubscriber()
@@ -37,11 +38,13 @@ vtkRosMarkerSubscriber::~vtkRosMarkerSubscriber()
 }
 
 void vtkRosMarkerSubscriber::Start(const std::string& topic_name)
-{
+{    
+  if (topic_name_ != topic_name)
+  {
+    dataset_ = 0;
+  }
 
-  dataset_ = 0;
   topic_name_ = topic_name;
-
   ros::NodeHandle n;
   subscriber_ = boost::make_shared<ros::Subscriber>(
         n.subscribe(topic_name, 1, &vtkRosMarkerSubscriber::Callback, this));

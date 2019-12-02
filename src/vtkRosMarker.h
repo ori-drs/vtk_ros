@@ -46,15 +46,36 @@ protected:
 
   vtkSmartPointer<vtkPolyData> ConvertMarker(const visualization_msgs::Marker &message);
 
-  void ApplyColor(vtkSmartPointer<vtkPolyData> &polyData, const visualization_msgs::Marker& message);
+  void ApplyColor(vtkSmartPointer<vtkPolyData> &polyData, const visualization_msgs::Marker& message,
+                  const std_msgs::ColorRGBA& default_color) const;
 
-  vtkSmartPointer<vtkPolyData> ConvertTriangleList(const visualization_msgs::Marker& message);
+  void ApplyColor(vtkSmartPointer<vtkPolyData> &polyData, const visualization_msgs::Marker& message) const;
 
-  vtkSmartPointer<vtkPolyData> ConvertSphere(const visualization_msgs::Marker& message);
+  vtkSmartPointer<vtkPolyData> ConvertTriangleList(const visualization_msgs::Marker& message) const;
 
-  vtkSmartPointer<vtkPolyData> ConvertCylinder(const visualization_msgs::Marker& message);
+  vtkSmartPointer<vtkPolyData> ConvertSphere(const visualization_msgs::Marker& message) const;
 
-  vtkSmartPointer<vtkPolyData> ConvertLineList(const visualization_msgs::Marker& message);
+  vtkSmartPointer<vtkPolyData> ConvertSphere(const visualization_msgs::Marker& message,
+                                             const geometry_msgs::Point& position, const std_msgs::ColorRGBA &color) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertSphereList(const visualization_msgs::Marker& message) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertCylinder(const visualization_msgs::Marker& message) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertLineList(const visualization_msgs::Marker& message) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertLineStrip(const visualization_msgs::Marker& message) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertLines(const visualization_msgs::Marker& message, int step) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertCube(const visualization_msgs::Marker& message) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertCube(const visualization_msgs::Marker& message,
+                                           const geometry_msgs::Point& position, const std_msgs::ColorRGBA &color) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertCubeList(const visualization_msgs::Marker& message) const;
+
+  vtkSmartPointer<vtkPolyData> ConvertPoints(const visualization_msgs::Marker& message) const;
 
   std::string fixed_frame_;
   std::string topic_name_;

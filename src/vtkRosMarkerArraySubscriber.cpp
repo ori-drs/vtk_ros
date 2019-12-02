@@ -35,10 +35,12 @@ vtkRosMarkerArraySubscriber::~vtkRosMarkerArraySubscriber()
 
 void vtkRosMarkerArraySubscriber::Start(const std::string& topic_name)
 {
+  if(topic_name_ != topic_name)
+  {
+    dataset_.clear();
+  }
 
-  dataset_.clear();
   topic_name_ = topic_name;
-
   ros::NodeHandle n;
   subscriber_ = boost::make_shared<ros::Subscriber>(
         n.subscribe(topic_name, 1, &vtkRosMarkerArraySubscriber::Callback, this));
@@ -70,14 +72,28 @@ void vtkRosMarkerArraySubscriber::Callback(const visualization_msgs::MarkerArray
       return;
     }
     vtkSmartPointer<vtkPolyData> data = ConvertMarker(message->markers[i]);
-    transformPolyDataUtils::transformPolyData(data, data, sensor_to_local_transform_);
-    dataset_.push_back(data);
+    if(data->GetNumberOfPoints() > 0)
+    {
+      transformPolyDataUtils::transformPolyData(data, data, sensor_to_local_transform_);
+      dataset_.push_back(data);
+    }
+  }
+  if(dataset_.size() > 0)
+  {
+    vtkSmartPointer<vtkAppendPolyData> merge = vtkSmartPointer<vtkAppendPolyData>::New();
+    merged_dataset_ = vtkSmartPointer<vtkPolyData>::New();
+    for(int i = 0; i < dataset_.size(); ++i)
+    {
+      merge->AddInputData(dataset_[i]);
+    }
+    merge->Update();
+    merged_dataset_->DeepCopy(merge->GetOutput());
   }
 }
 
 void vtkRosMarkerArraySubscriber::GetMesh(vtkPolyData* polyData, int index)
 {
-  if (dataset_.size()-1 < index || index < 0)
+  if (dataset_.size()-1 < index || index < 0 || !polyData)
   {
     return;
   }
@@ -85,6 +101,17 @@ void vtkRosMarkerArraySubscriber::GetMesh(vtkPolyData* polyData, int index)
   //we can't copy dataset_ if it's being modified elsewhere
   std::lock_guard<std::mutex> lock(mutex_);
   polyData->DeepCopy(dataset_[index]);
+}
+
+void vtkRosMarkerArraySubscriber::GetMesh(vtkPolyData* poly_data)
+{
+  if (!poly_data || !merged_dataset_)
+  {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  poly_data->DeepCopy(merged_dataset_);
 }
 
 int vtkRosMarkerArraySubscriber::GetNumberOfMesh()

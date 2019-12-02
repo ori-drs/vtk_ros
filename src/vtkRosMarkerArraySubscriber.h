@@ -45,6 +45,12 @@ public:
   void GetMesh(vtkPolyData* poly_data, int index);
 
   /**
+   * @brief GetMesh returns all the received markers in a single polyData.
+   * @param poly_data
+   */
+  void GetMesh(vtkPolyData* poly_data);
+
+  /**
    * @brief GetNumberOfMesh returns the number of markers received
    * @return
    */
@@ -63,6 +69,7 @@ private:
   void Callback(const visualization_msgs::MarkerArrayPtr& message);
 
   std::vector<vtkSmartPointer<vtkPolyData> > dataset_;
+  vtkSmartPointer<vtkPolyData> merged_dataset_;
 };
 
 #endif // VTKROSMARKERARRAYSUBSCRIBER_H_

@@ -18,6 +18,8 @@
 #include <vtkTriangle.h>
 #include <vtkAppendPolyData.h>
 #include <vtkSphereSource.h>
+#include <vtkCubeSource.h>
+#include <vtkPointSource.h>
 #include <vtkCylinderSource.h>
 #include "vtkObjectFactory.h"
 
@@ -53,16 +55,31 @@ vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertMarker(const visualization_msg
   } else if(type == visualization_msgs::Marker::LINE_LIST)
   {
     return ConvertLineList(message);
+  } else if(type == visualization_msgs::Marker::LINE_STRIP)
+  {
+    return ConvertLineStrip(message);
+  } else if(type == visualization_msgs::Marker::CUBE)
+  {
+    return ConvertCube(message);
+  } else if(type == visualization_msgs::Marker::CUBE_LIST)
+  {
+    return ConvertCubeList(message);
+  } else if(type == visualization_msgs::Marker::SPHERE_LIST)
+  {
+    return ConvertSphereList(message);
   } else {
     ROS_ERROR("Unknow type in vtkRosMarker");
   }
   return poly_data;
 }
 
-vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertTriangleList(const visualization_msgs::Marker &message)
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertTriangleList(const visualization_msgs::Marker &message) const
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
   int num_cells = message.points.size() / 3; //number of triangle in the mesh
+  if (message.points.size() == 0)
+    return poly_data;
+
   int num_points = 3*num_cells;
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
   points->SetDataTypeToDouble();
@@ -94,26 +111,50 @@ vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertTriangleList(const visualizati
   return poly_data;
 }
 
-vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertSphere(const visualization_msgs::Marker& message)
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertSphere(const visualization_msgs::Marker& message) const
+{
+  return ConvertSphere(message, message.pose.position, message.color);
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertSphere(const visualization_msgs::Marker& message,
+                                                         const geometry_msgs::Point& position,
+                                                         const std_msgs::ColorRGBA& color) const
 {
   vtkSmartPointer<vtkSphereSource> sphere = vtkSmartPointer<vtkSphereSource>::New();
   sphere->SetPhiResolution(11);
   sphere->SetThetaResolution(11);
-  sphere->SetCenter(message.pose.position.x, message.pose.position.y, message.pose.position.z);
+  sphere->SetCenter(position.x, position.y, position.z);
   sphere->SetRadius(0.5*message.scale.x);
   sphere->Update();
 
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
   poly_data->DeepCopy(sphere->GetOutput());
-  ApplyColor(poly_data, message);
+  ApplyColor(poly_data, message, color);
   return poly_data;
 }
 
-vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertCylinder(const visualization_msgs::Marker &message)
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertSphereList(const visualization_msgs::Marker& message) const
+{
+  vtkSmartPointer<vtkAppendPolyData> list = vtkSmartPointer<vtkAppendPolyData>::New();
+  vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
+  if (message.points.size() == 0 || message.points.size() != message.colors.size())
+    return poly_data;
+
+  for(int i = 0; i < message.points.size(); ++i)
+  {
+    vtkSmartPointer<vtkPolyData> poly_data = ConvertSphere(message, message.points[i], message.colors[i]);
+    list->AddInputData(poly_data);
+  }
+  list->Update();
+
+  poly_data->DeepCopy(list->GetOutput());
+  return poly_data;
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertCylinder(const visualization_msgs::Marker &message) const
 {
   vtkSmartPointer<vtkCylinderSource> cylinder = vtkSmartPointer<vtkCylinderSource>::New();
   cylinder->SetResolution(11);
-  //cylinder->SetCenter(message.pose.position.x, message.pose.position.y, message.pose.position.z);
   cylinder->SetRadius(0.5*message.scale.x);
   cylinder->Update();
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
@@ -128,10 +169,39 @@ vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertCylinder(const visualization_m
   return poly_data;
 }
 
+
 void vtkRosMarker::ApplyColor(vtkSmartPointer<vtkPolyData>& poly_data,
-                              const visualization_msgs::Marker& message)
+                              const visualization_msgs::Marker& message, const std_msgs::ColorRGBA& default_color) const
 {
   int num_points = poly_data->GetNumberOfPoints();
+  if(num_points == 0)
+    return;
+
+  vtkSmartPointer<vtkUnsignedCharArray> color = vtkSmartPointer<vtkUnsignedCharArray>::New();
+  color->SetNumberOfComponents(3);
+  // initialize colors
+  unsigned char * vtk_color_cells = (unsigned char *)calloc(num_points*3, sizeof(unsigned char));
+  color->SetArray(vtk_color_cells, num_points*3, 0);
+  color->SetName("color");
+  unsigned char* ptr_color = vtk_color_cells;
+
+  for(int i = 0; i < num_points; ++i)
+  {
+    *ptr_color = 255 * default_color.r;
+    *(ptr_color + 1) = 255 * default_color.g;
+    *(ptr_color + 2) = 255 * default_color.b;
+    ptr_color += 3;
+  }
+  poly_data->GetPointData()->AddArray(color);
+}
+
+void vtkRosMarker::ApplyColor(vtkSmartPointer<vtkPolyData>& poly_data,
+                              const visualization_msgs::Marker& message) const
+{
+  int num_points = poly_data->GetNumberOfPoints();
+  if(num_points == 0)
+    return;
+
   bool has_color = (num_points == message.colors.size());
   vtkSmartPointer<vtkUnsignedCharArray> color = vtkSmartPointer<vtkUnsignedCharArray>::New();
   color->SetNumberOfComponents(3);
@@ -155,15 +225,27 @@ void vtkRosMarker::ApplyColor(vtkSmartPointer<vtkPolyData>& poly_data,
     }
     ptr_color += 3;
   }
-
   poly_data->GetPointData()->AddArray(color);
 }
 
-vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertLineList(const visualization_msgs::Marker& message)
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertLineList(const visualization_msgs::Marker& message) const
+{
+  return ConvertLines(message, 2);
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertLineStrip(const visualization_msgs::Marker& message) const
+{
+  return ConvertLines(message, 1);
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertLines(const visualization_msgs::Marker& message, int step) const
 {
   vtkSmartPointer<vtkAppendPolyData> lines_list = vtkSmartPointer<vtkAppendPolyData>::New();
+  vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
+  if (message.points.size() == 0)
+    return poly_data;
 
-  for(int i = 0; i+1 < message.points.size(); i+=2)
+  for(int i = 0; i+1 < message.points.size(); i+=step)
   {
     vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New();
     line->SetPoint1(message.points[i].x, message.points[i].y, message.points[i].z);
@@ -172,12 +254,74 @@ vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertLineList(const visualization_m
     lines_list->AddInputData(line->GetOutput());
   }
   lines_list->Update();
-  vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
+
   poly_data->DeepCopy(lines_list->GetOutput());
   ApplyColor(poly_data, message);
   return poly_data;
 }
 
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertCube(const visualization_msgs::Marker& message) const
+{
+  return ConvertCube(message, message.pose.position, message.color);
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertCube(const visualization_msgs::Marker& message,
+                                                       const geometry_msgs::Point& position,
+                                                       const std_msgs::ColorRGBA& color) const
+{
+  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New();
+  cube->SetCenter(position.x, position.y, position.z);
+  cube->SetXLength(message.scale.x);
+  cube->SetYLength(message.scale.y);
+  cube->SetZLength(message.scale.z);
+  cube->Update();
+  vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
+  poly_data->DeepCopy(cube->GetOutput());
+  ApplyColor(poly_data, message, color);
+
+  return poly_data;
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertCubeList(const visualization_msgs::Marker& message) const
+{
+  vtkSmartPointer<vtkAppendPolyData> list = vtkSmartPointer<vtkAppendPolyData>::New();
+  vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
+  if (message.points.size() == 0 || message.points.size() != message.colors.size())
+    return poly_data;
+
+  for(int i = 0; i < message.points.size(); ++i)
+  {
+    vtkSmartPointer<vtkPolyData> poly_data = ConvertCube(message, message.points[i], message.colors[i]);
+    list->AddInputData(poly_data);
+  }
+  list->Update();
+
+  poly_data->DeepCopy(list->GetOutput());
+  return poly_data;
+}
+
+vtkSmartPointer<vtkPolyData> vtkRosMarker::ConvertPoints(const visualization_msgs::Marker& message) const
+{
+  vtkSmartPointer<vtkPointSource> points = vtkSmartPointer<vtkPointSource>::New();
+  vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New();
+  int num_points = message.points.size();
+  if( num_points == 0)
+    return poly_data;
+
+  vtkSmartPointer<vtkPoints> pts = vtkSmartPointer<vtkPoints>::New();
+  pts->SetDataTypeToDouble();
+  pts->SetNumberOfPoints(num_points);
+  for(int i = 0; i < num_points; ++i)
+  {
+    pts->SetPoint(i, message.points[i].x, message.points[i].y, message.points[i].z);
+  }
+  points->Update();
+
+  poly_data->DeepCopy(points->GetOutput());
+  ApplyColor(poly_data, message);
+
+  return poly_data;
+}
 
 void vtkRosMarker::PrintSelf(ostream& os, vtkIndent indent)
 {
