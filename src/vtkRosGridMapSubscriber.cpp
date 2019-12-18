@@ -41,7 +41,8 @@ void vtkRosGridMapSubscriber::Start(const std::string &topic_name) {
 }
 
 void vtkRosGridMapSubscriber::Stop() {
-  subscriber_->shutdown();
+  if (subscriber_)
+    subscriber_->shutdown();
 }
 
 void vtkRosGridMapSubscriber::ResetTime()

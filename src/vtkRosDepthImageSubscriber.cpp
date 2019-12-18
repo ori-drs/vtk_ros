@@ -55,11 +55,15 @@ void vtkRosDepthImageSubscriber::Start(const std::string& image_topic_a, const s
 
 void vtkRosDepthImageSubscriber::Stop()
 {
-  image_a_sub_->unsubscribe();
-  image_b_sub_->unsubscribe();
+  if (image_a_sub_)
+    image_a_sub_->unsubscribe();
+  if (image_b_sub_)
+    image_b_sub_->unsubscribe();
 
-  info_a_sub_->unsubscribe();
-  info_b_sub_->unsubscribe();
+  if (info_a_sub_)
+    info_a_sub_->unsubscribe();
+  if (info_b_sub_)
+    info_b_sub_->unsubscribe();
 
   sync_.reset();
 }

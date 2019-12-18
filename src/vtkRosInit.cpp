@@ -55,8 +55,7 @@ void vtkRosInit::Start() {
 
     int argc = cstrings.size();
 
-    ros::init(argc, cstrings.data(), "director", ros::init_options::NoSigintHandler |
-              ros::init_options::AnonymousName);
+    ros::init(argc, cstrings.data(), "vtk_ros", ros::init_options::NoSigintHandler);
   }else{
     std::cout << "vtkRosInit: ROS is Initialized. Not running init. This should not happen\n";
   }

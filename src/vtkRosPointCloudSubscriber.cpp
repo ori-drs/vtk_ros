@@ -52,7 +52,8 @@ void vtkRosPointCloudSubscriber::Start(std::string topic_name) {
 }
 
 void vtkRosPointCloudSubscriber::Stop() {
-  subscriber_->shutdown();
+  if (subscriber_)
+    subscriber_->shutdown();
 }
 
 void vtkRosPointCloudSubscriber::ResetTime()

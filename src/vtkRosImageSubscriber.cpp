@@ -50,8 +50,10 @@ void vtkRosImageSubscriber::Start(const std::string& image_topic, const std::str
 
 void vtkRosImageSubscriber::Stop()
 {
-  image_sub_->unsubscribe();
-  info_sub_->unsubscribe();
+  if (image_sub_)
+    image_sub_->unsubscribe();
+  if (info_sub_)
+    info_sub_->unsubscribe();
   sync_.reset();
 }
 
