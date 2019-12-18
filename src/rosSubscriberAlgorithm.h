@@ -19,8 +19,12 @@ public:
 
   static RosSubscriberAlgorithm *New();
 
-  void TransformBetweenFrames(const std::string& target_frame, const std::string& source_frame,
-                              const ros::Time& time);
+  /**
+   * @brief TransformBetweenFrames returns the latest received transform between the two frames
+   */
+
+  void TransformBetweenFrames(const std::string& target_frame, const std::string& source_frame);
+
   /**
    * @brief ResetTime reset the transform listener
    */
