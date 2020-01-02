@@ -198,6 +198,7 @@ vtkSmartPointer<vtkPolyData> vtkRosGridMapSubscriber::ConvertMesh()
         {
           getInterpolatedColor(inputMap_, colorLayer_, indexes[j][m-1],
               minIntensity, maxIntensity, color);
+          //the way we set the color is convoluted but it's more efficient that calling :
           //colors[i]->InsertNextTupleValue(color);
           *ptrColor = color[0];
           *(ptrColor + 1) = color[1];

@@ -4,7 +4,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 list(APPEND sources
     rosSubscriberAlgorithm.cpp
     transformPolyDataUtils.cpp
-    vtkRosGridMapSubscriber.cpp 
+    vtkRosGridMapSubscriber.cpp
+    vtkRosMarker.cpp
+    vtkRosMarkerArraySubscriber.cpp
+    vtkRosMarkerSubscriber.cpp 
     vtkRosPointCloudSubscriber.cpp
     vtkRosDepthImageSubscriber.cpp
     vtkRosInit.cpp
