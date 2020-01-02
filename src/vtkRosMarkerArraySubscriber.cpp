@@ -64,8 +64,9 @@ void vtkRosMarkerArraySubscriber::Callback(const visualization_msgs::MarkerArray
       continue;
     }
 
-    try{
-      TransformBetweenFrames(fixed_frame_, message->markers[i].header.frame_id, message->markers[i].header.stamp);
+    try
+    {
+      TransformBetweenFrames(fixed_frame_, message->markers[i].header.frame_id);
     }
     catch (tf::TransformException& ex){
       ROS_ERROR("%s",ex.what());
