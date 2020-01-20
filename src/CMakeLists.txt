@@ -7,7 +7,8 @@ list(APPEND sources
     vtkRosGridMapSubscriber.cpp
     vtkRosMarker.cpp
     vtkRosMarkerArraySubscriber.cpp
-    vtkRosMarkerSubscriber.cpp 
+    vtkRosMarkerSubscriber.cpp
+    vtkRosPathSubscriber.cpp 
     vtkRosPointCloudSubscriber.cpp
     vtkRosDepthImageSubscriber.cpp
     vtkRosInit.cpp
