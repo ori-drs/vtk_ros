@@ -5,6 +5,7 @@
 #include <vtkImageData.h>
 #include <vtkNew.h>
 #include <vtkAxes.h>
+#include <vtkTubeFilter.h>
 #include <vtkLineSource.h>
 
 #include <vtkIdList.h>
@@ -31,7 +32,9 @@ vtkRosPathSubscriber::vtkRosPathSubscriber()
   }
   frame_id_ = "no_frame";
   fixed_frame_ = "map"; // or "odom"
-
+  scale_ = 0.35;
+  use_tube_ = false;
+  tube_width_ = 0.03;
 }
 
 vtkRosPathSubscriber::~vtkRosPathSubscriber()
@@ -48,7 +51,7 @@ void vtkRosPathSubscriber::Start(std::string topic_name)
 
   ros::NodeHandle n;
   subscriber_ = boost::make_shared<ros::Subscriber>(
-        n.subscribe(topic_name, 10, &vtkRosPathSubscriber::Callback, this));
+        n.subscribe(topic_name, 10, &vtkRosPathSubscriber::ProcessData, this));
 
 }
 
@@ -70,10 +73,11 @@ void vtkRosPathSubscriber::ResetTime()
   }
 }
 
-void vtkRosPathSubscriber::Callback(const nav_msgs::PathPtr& message)
+void vtkRosPathSubscriber::ProcessData(const nav_msgs::PathPtr& message)
 {
+  std::lock_guard<std::mutex> lock(mutex_);
   frame_id_ = message->header.frame_id;
-
+  last_data_ = boost::make_shared<nav_msgs::Path>(*message);
   try{
     TransformBetweenFrames(fixed_frame_, frame_id_);
   }
@@ -82,7 +86,6 @@ void vtkRosPathSubscriber::Callback(const nav_msgs::PathPtr& message)
     return;
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
   new_data_ = true;
 
   vtkSmartPointer<vtkAppendPolyData> append_frames = vtkSmartPointer<vtkAppendPolyData>::New();
@@ -123,16 +126,29 @@ void vtkRosPathSubscriber::GetMeshes(vtkPolyData* frames, vtkPolyData* lines, bo
 
 vtkSmartPointer<vtkPolyData> vtkRosPathSubscriber::GetFrame(const geometry_msgs::Pose& pose)
 {
+  vtkSmartPointer<vtkPolyData> output = vtkSmartPointer<vtkPolyData>::New();
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New();
   axes->SetComputeNormals(0);
-  axes->SetScaleFactor(0.35);
+  axes->SetScaleFactor(scale_);
   axes->Update();
+
+  if(use_tube_)
+  {
+    vtkSmartPointer<vtkTubeFilter> tube = vtkSmartPointer<vtkTubeFilter>::New();
+    tube->SetInputConnection(axes->GetOutputPort());
+    tube->SetRadius(tube_width_);
+    tube->SetNumberOfSides(12);
+    tube->Update();
+    output = tube->GetOutput();
+  } else {
+    output = axes->GetOutput();
+  }
 
   vtkSmartPointer<vtkPolyData> transformed_poly_data = vtkSmartPointer<vtkPolyData>::New();
   tf::Transform transform(tf::Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w),
                           tf::Vector3(pose.position.x, pose.position.y, pose.position.z));
   vtkSmartPointer<vtkTransform> vtk_transform = transformPolyDataUtils::transformFromPose(transform);
-  transformPolyDataUtils::transformPolyData(axes->GetOutput(), transformed_poly_data, vtk_transform);
+  transformPolyDataUtils::transformPolyData(output, transformed_poly_data, vtk_transform);
   transformed_poly_data->GetPointData()->GetArray("Axes")->SetName("Color");
   return transformed_poly_data;
 }
@@ -164,6 +180,27 @@ vtkSmartPointer<vtkPolyData> vtkRosPathSubscriber::GetLine(const geometry_msgs::
   }
   poly_data->GetPointData()->AddArray(colors);
   return poly_data;
+}
+
+void vtkRosPathSubscriber::SetScale(double scale)
+{
+  scale_ = scale;
+  if(last_data_)
+    ProcessData(last_data_);
+}
+
+void vtkRosPathSubscriber::SetTubeWidth(double tube_width)
+{
+  tube_width_ = tube_width;
+  if(last_data_)
+    ProcessData(last_data_);
+}
+
+void vtkRosPathSubscriber::UseTube(bool use_tube)
+{
+  use_tube_ = use_tube;
+  if(last_data_)
+    ProcessData(last_data_);
 }
 
 

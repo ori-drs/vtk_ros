@@ -47,6 +47,17 @@ public:
     fixed_frame_ = fixed_frame_in;
   }
 
+  /**
+   * @brief Set the scale of the frames
+   */
+  void SetScale(double scale);
+
+  /**
+   * @brief Use a tube or a thin line to represent the axis of frames
+   */
+  void UseTube(bool use_tube);
+
+  void SetTubeWidth(double tube_width);
 
   //this method is defined in RosSubscriberAlgorithm but it must be redefined here because of a limitation of vtk_wrap_python3
   /**
@@ -64,7 +75,7 @@ private:
   vtkRosPathSubscriber(const vtkRosPathSubscriber&);  // Not implemented.
   void operator=(const vtkRosPathSubscriber&);  // Not implemented.
 
-  void Callback(const nav_msgs::PathPtr& message);
+  void ProcessData(const nav_msgs::PathPtr& message);
 
   vtkSmartPointer<vtkPolyData> GetFrame(const geometry_msgs::Pose &pose);
 
@@ -73,8 +84,13 @@ private:
 
   vtkSmartPointer<vtkPolyData> frames_dataset_; // contains the frames received
   vtkSmartPointer<vtkPolyData> lines_dataset_;  //contains the lines received
+  nav_msgs::PathPtr last_data_;
   std::string frame_id_;
   std::string fixed_frame_;
+
+  bool use_tube_;
+  double scale_;
+  double tube_width_;
 
   boost::shared_ptr<ros::Subscriber> subscriber_;
   std::mutex mutex_;
