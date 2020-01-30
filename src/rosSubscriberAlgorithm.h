@@ -30,6 +30,8 @@ public:
    */
   void ResetTime();
 
+  void SetTFPrefix(std::string prefix);
+
 protected:
 
   RosSubscriberAlgorithm();
@@ -38,6 +40,7 @@ protected:
   boost::shared_ptr<tf::TransformListener> tf_listener_;
   vtkSmartPointer<vtkTransform> sensor_to_local_transform_;
   bool new_data_;
+  std::string tf_prefix_;
 
 private:
   RosSubscriberAlgorithm(const RosSubscriberAlgorithm&);  // Not implemented.

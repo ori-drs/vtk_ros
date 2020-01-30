@@ -55,6 +55,10 @@ public:
    */
   void ResetTime();
 
+  void SetTFPrefix(std::string prefix) {
+    tf_prefix_ = prefix;
+  }
+
 protected:
 
   vtkRosGridMapSubscriber();

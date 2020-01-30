@@ -22,7 +22,12 @@ void RosSubscriberAlgorithm::TransformBetweenFrames(const std::string& target_fr
   tf::StampedTransform transform;
 
   // return the latest transform between target_frame and source_frame
-  tf_listener_->lookupTransform(target_frame, source_frame, ros::Time(0), transform);
+  try {
+    tf_listener_->lookupTransform(target_frame, source_frame, ros::Time(0), transform);
+  } catch (tf2::LookupException) {
+    tf_listener_->lookupTransform(tf_prefix_ + "/" + target_frame, tf_prefix_ + "/" + source_frame, ros::Time(0), transform);
+  }
+
   sensor_to_local_transform_ = transformPolyDataUtils::transformFromPose(transform);
 
 
@@ -36,4 +41,8 @@ void RosSubscriberAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
 void RosSubscriberAlgorithm::ResetTime()
 {
   tf_listener_->clear();
+}
+
+void RosSubscriberAlgorithm::SetTFPrefix(std::string prefix){
+  tf_prefix_ = prefix;
 }
