@@ -18,7 +18,7 @@ public:
   static void transformPolyData(vtkPolyData* polyDataSrc, vtkPolyData* polyDataDst,
                                 const vtkSmartPointer<vtkTransform>& transform);
 
-  static vtkSmartPointer<vtkTransform> transformFromPose(const tf::StampedTransform& rosTransform);
+  static vtkSmartPointer<vtkTransform> transformFromPose(const tf::Transform& rosTransform);
 
   static vtkSmartPointer<vtkPolyData> PolyDataFromPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud);
 };
