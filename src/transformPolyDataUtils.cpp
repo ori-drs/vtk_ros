@@ -30,7 +30,7 @@ void transformPolyDataUtils::transformPolyData(vtkPolyData* polyDataSrc, vtkPoly
   }
 }
 
-vtkSmartPointer<vtkTransform> transformPolyDataUtils::transformFromPose(const tf::StampedTransform& rosTransform)
+vtkSmartPointer<vtkTransform> transformPolyDataUtils::transformFromPose(const tf::Transform& rosTransform)
 {
   vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
   //translation
