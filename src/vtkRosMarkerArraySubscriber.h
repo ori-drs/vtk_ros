@@ -56,6 +56,9 @@ public:
    */
   int GetNumberOfMesh();
 
+  void SetTFPrefix(std::string prefix) {
+    tf_prefix_ = prefix;
+  }
 
 protected:
 
