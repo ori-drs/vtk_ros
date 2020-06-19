@@ -78,8 +78,13 @@ void vtkRosImageSubscriber::ImageCallback(const sensor_msgs::ImageConstPtr& imag
      //The transform between the camera and the base doesn't change so it's only computed once
      std::string frame_id = image->header.frame_id;
      camera_transform_initialized_ = true;
+
      try{
-       TransformBetweenFrames(frame_id,  "base");
+       if (tf_prefix_ == "") {
+        TransformBetweenFrames(frame_id,  "base");
+       } else {
+        TransformBetweenFrames(frame_id,  tf_prefix_ + "/" + "base");
+       }
      }
      catch (tf::TransformException& ex){
        ROS_ERROR("%s",ex.what());

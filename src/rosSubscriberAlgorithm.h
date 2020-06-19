@@ -20,7 +20,7 @@ public:
   static RosSubscriberAlgorithm *New();
 
   /**
-   * @brief TransformBetweenFrames returns the latest received transform between the two frames
+   * @brief TransformBetweenFrames put the latest received transform between the two frames into sensor_to_local_transform_
    */
 
   void TransformBetweenFrames(const std::string& target_frame, const std::string& source_frame);
