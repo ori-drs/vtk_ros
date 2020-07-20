@@ -6,10 +6,15 @@
 
 vtkStandardNewMacro(RosSubscriberAlgorithm);
 
+boost::shared_ptr<tf::TransformListener> RosSubscriberAlgorithm::tf_listener_ = nullptr;
+
 RosSubscriberAlgorithm::RosSubscriberAlgorithm()
   :new_data_(false)
 {
-  tf_listener_ = boost::make_shared<tf::TransformListener>();
+  if(!tf_listener_)
+  {
+    tf_listener_ = boost::make_shared<tf::TransformListener>();
+  }    
   sensor_to_local_transform_ = vtkSmartPointer<vtkTransform>::New();
 }
 
