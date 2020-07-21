@@ -37,7 +37,7 @@ protected:
   RosSubscriberAlgorithm();
   virtual ~RosSubscriberAlgorithm();
 
-  boost::shared_ptr<tf::TransformListener> tf_listener_;
+  static boost::shared_ptr<tf::TransformListener> tf_listener_;
   vtkSmartPointer<vtkTransform> sensor_to_local_transform_;
   bool new_data_;
   std::string tf_prefix_;
