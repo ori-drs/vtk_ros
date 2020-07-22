@@ -36,6 +36,8 @@ public:
 
   void Stop();
 
+  void ResetTime();
+
   /**
    * @brief GetMesh
    * @param polyData

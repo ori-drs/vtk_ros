@@ -56,6 +56,19 @@ void vtkRosMarkerSubscriber::Stop()
   subscriber_->shutdown();
 }
 
+void vtkRosMarkerSubscriber::ResetTime()
+{
+  RosSubscriberAlgorithm::ResetTime();
+
+  // reset subscriber to empty queue of incoming messages
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (subscriber_)
+  {
+    Stop();
+    Start(topic_name_);
+  }
+}
+
 void vtkRosMarkerSubscriber::Callback(const visualization_msgs::MarkerPtr& message)
 {
   if (message->header.frame_id.empty())

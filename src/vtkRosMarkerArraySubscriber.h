@@ -36,6 +36,8 @@ public:
 
   void Stop();
 
+  void ResetTime();
+
   /**
    * @brief Due to a limitation of vtk python wrapper, it's not possible to return an array of vtkPolyData
    * so the way to get all the received markers is to call this function with index going from 0 to
