@@ -6,13 +6,13 @@ add_compile_options(-std=c++11)
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   pcl_ros
-  image_utils
-  depth_image_utils
+  image_utils_drs
+  depth_image_utils_drs
   image_transport
   grid_map_ros
   pcl_plugin)
 
-find_package(VTK REQUIRED)
+find_package(VTK 6.3 REQUIRED)
 include(${VTK_USE_FILE})
 
 find_package(PCL REQUIRED)
