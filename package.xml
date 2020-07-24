@@ -51,8 +51,8 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>grid_map_ros</depend>
   <depend>pcl_ros</depend>
-  <depend>image_utils</depend>
-  <depend>depth_image_utils</depend>
+  <depend>image_utils_drs</depend>
+  <depend>depth_image_utils_drs</depend>
   <depend>image_transport</depend>
   <depend>pcl_plugin</depend>
 
