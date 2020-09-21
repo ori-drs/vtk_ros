@@ -55,6 +55,7 @@
   <depend>depth_image_utils_drs</depend>
   <depend>image_transport</depend>
   <depend>pcl_plugin</depend>
+  <depend>tf2_ros</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

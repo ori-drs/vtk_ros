@@ -1,9 +1,12 @@
 #ifndef ROSSUBSCRIBERALGORITHM_H
 #define ROSSUBSCRIBERALGORITHM_H
 
+#include <mutex>
+
 #include <boost/shared_ptr.hpp>
 
-#include <tf/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 
 #include <vtkDRCFiltersModule.h>
 #include <vtkSmartPointer.h>
@@ -37,7 +40,9 @@ protected:
   RosSubscriberAlgorithm();
   virtual ~RosSubscriberAlgorithm();
 
-  static boost::shared_ptr<tf::TransformListener> tf_listener_;
+  static boost::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+  static boost::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+  std::mutex tf_mutex_;
   vtkSmartPointer<vtkTransform> sensor_to_local_transform_;
   bool new_data_;
   std::string tf_prefix_;
