@@ -10,7 +10,10 @@ find_package(catkin REQUIRED COMPONENTS
   depth_image_utils_drs
   image_transport
   grid_map_ros
-  pcl_plugin)
+  pcl_plugin
+  tf2_geometry_msgs
+  tf2_ros
+  tf2)
 
 find_package(VTK 6.3 REQUIRED)
 include(${VTK_USE_FILE})
