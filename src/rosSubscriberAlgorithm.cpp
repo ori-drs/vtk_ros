@@ -50,14 +50,7 @@ void RosSubscriberAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
 
 void RosSubscriberAlgorithm::ResetTime()
 {
-  // TODO : with the old tf_listener there was a "clear" method that doesn't exist anymore.
-  // The awkward following steps are to reset it, is there a better way to do that ?
-  std::lock_guard<std::mutex> lock(tf_mutex_);
-  tf_listener_.reset();
-  tf_buffer_.reset();
-  tf_buffer_ = boost::make_shared<tf2_ros::Buffer>();
-  tf_listener_ = boost::make_shared<tf2_ros::TransformListener>(*(tf_buffer_.get()));
-
+  tf_buffer_->clear();
 }
 
 void RosSubscriberAlgorithm::SetTFPrefix(std::string prefix){
