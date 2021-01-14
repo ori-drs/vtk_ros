@@ -38,7 +38,7 @@ public:
   static vtkRosImageSubscriber *New();
 
   void Start(const std::string& image_topic, const std::string& image_transport,
-             const std::string& info_topic);
+             const std::string& info_topic, const std::string& base_frame="base");
 
   void Stop();
   /**
@@ -85,7 +85,7 @@ private:
   boost::shared_ptr<message_filters::Subscriber<sensor_msgs::CameraInfo> > info_sub_;
   boost::shared_ptr<message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo> > sync_;
 
-  std::string image_topic_, image_transport_, info_topic_;
+  std::string image_topic_, image_transport_, info_topic_, base_frame_;
 
   boost::shared_ptr<image_transport::ImageTransport> it_;
   mutable std::mutex mutex_;

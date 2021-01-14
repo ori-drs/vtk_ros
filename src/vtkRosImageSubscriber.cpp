@@ -27,13 +27,14 @@ vtkRosImageSubscriber::~vtkRosImageSubscriber()
 }
 
 void vtkRosImageSubscriber::Start(const std::string& image_topic, const std::string& image_transport,
-                                       const std::string& info_topic)
+                                       const std::string& info_topic, const std::string& base_frame)
 {
   ros::NodeHandle node;
 
   image_topic_ = image_topic;
   image_transport_ = image_transport;
   info_topic_ = info_topic;
+  base_frame_ = base_frame;
 
   image_sub_ = boost::make_shared<image_transport::SubscriberFilter>();
   it_ = boost::make_shared<image_transport::ImageTransport>(node);
@@ -81,9 +82,9 @@ void vtkRosImageSubscriber::ImageCallback(const sensor_msgs::ImageConstPtr& imag
 
      try{
        if (tf_prefix_ == "") {
-        TransformBetweenFrames(frame_id,  "base");
+        TransformBetweenFrames(frame_id,  base_frame_);
        } else {
-        TransformBetweenFrames(frame_id,  tf_prefix_ + "/" + "base");
+        TransformBetweenFrames(frame_id,  tf_prefix_ + "/" + base_frame_);
        }
      }
      catch (tf::TransformException& ex){
