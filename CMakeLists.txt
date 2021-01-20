@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(vtk_ros)
 
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++14)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   tf2)
 
-find_package(VTK 6.3 REQUIRED)
+find_package(VTK 7.1.1 REQUIRED)
 include(${VTK_USE_FILE})
 
 find_package(PCL REQUIRED)

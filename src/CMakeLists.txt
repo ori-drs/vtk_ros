@@ -24,6 +24,10 @@ set(VTK_LIBRARIES
   vtkRendering${VTK_RENDERING_BACKEND}
   vtkFiltersExtraction
   vtkFiltersCore
+  vtkFiltersParallelDIY2
+  vtkCommonExecutionModel
+  vtkWrappingPythonCore 
+  vtkCommonExecutionModelPythonD
   vtkCommonCore
   )
 
