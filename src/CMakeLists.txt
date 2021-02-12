@@ -25,6 +25,8 @@ set(VTK_LIBRARIES
   vtkFiltersExtraction
   vtkFiltersCore
   vtkCommonCore
+  vtkIOMPIImage
+  vtkIOMPIParallel
   )
 
 if(VTK_VERSION VERSION_GREATER 6.9)
