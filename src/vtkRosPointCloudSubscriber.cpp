@@ -106,7 +106,7 @@ void vtkRosPointCloudSubscriber::GetPointCloud(vtkPolyData* polyData, bool only_
 
 vtkSmartPointer<vtkPolyData> vtkRosPointCloudSubscriber::convertPointCloud2ToVtk(const sensor_msgs::PointCloud2Ptr& msg)
 {
-  pcl::PCLPointCloud2Ptr cloud;
+  pcl::PCLPointCloud2Ptr cloud(new pcl::PCLPointCloud2());
   pcl_conversions::moveToPCL(*msg, *cloud);
   return vtkPCLConversions::ConvertPointCloud2ToVtk(cloud);
 }
