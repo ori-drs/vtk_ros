@@ -25,7 +25,18 @@ set(VTK_LIBRARIES
   vtkFiltersExtraction
   vtkFiltersCore
   vtkCommonCore
+  vtkIOMPIImage
+  vtkIOMPIParallel
   )
+
+if(VTK_VERSION VERSION_GREATER 6.9)
+  list(APPEND VTK_LIBRARIES
+    vtkFiltersParallelDIY2
+    vtkCommonExecutionModel
+    vtkWrappingPythonCore
+    vtkCommonExecutionModelPythonD
+    )
+endif()
 
 
 add_library(${library_name} ${sources})

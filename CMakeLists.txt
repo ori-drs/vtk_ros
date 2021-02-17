@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(vtk_ros)
 
-add_compile_options(-std=c++11)
+set(CMAKE_CXX_STANDARD 14)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
@@ -15,7 +15,15 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   tf2)
 
-find_package(VTK 6.3 REQUIRED)
+if($ENV{ROS_DISTRO} MATCHES "noetic")
+  message(STATUS "ROS Noetic")
+  find_package(VTK 7 REQUIRED)
+elseif($ENV{ROS_DISTRO} MATCHES "melodic")
+  message(STATUS "ROS Melodic")
+  find_package(VTK 6.3 REQUIRED)
+else()
+  message(FATAL_ERROR "Environment variable ROS_DISTRO not defined - cannot deduce correct VTK version. Did you source a ROS workspace?")
+endif()
 include(${VTK_USE_FILE})
 
 find_package(PCL REQUIRED)
