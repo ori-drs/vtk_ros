@@ -108,7 +108,7 @@ vtkSmartPointer<vtkPolyData> vtkRosPointCloudSubscriber::convertPointCloud2ToVtk
 {
   pcl::PCLPointCloud2Ptr cloud(new pcl::PCLPointCloud2());
   pcl_conversions::moveToPCL(*msg, *cloud);
-  return vtkPCLConversions::ConvertPointCloud2ToVtk(cloud);
+  return vtkPCLConversions::ConvertPointCloud2ToVtk(*cloud);
 }
 
 void vtkRosPointCloudSubscriber::addPointCloud(const vtkSmartPointer<vtkPolyData>& poly_data)
